@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Pathology Flashcards - Practice Slides</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        .flashcard-container {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            max-width: 750px;
+            width: 100%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            min-height: 960px;
+            box-sizing: border-box;
+        }
+        .slide-image {
+            width: 100%;
+            max-width: 740px;
+            height: 620px;
+            margin-bottom: 30px;
+            border-radius: 18px;
+            box-shadow: 0 4px 28px rgba(0, 0, 0, 0.18);
+            background-color: #f0f2f5;
+            object-fit: contain;
+            border: 2px solid #b1c0cc;
+            display: block;
+            image-rendering: auto;
+            image-rendering: crisp-edges;
+        }
+        .card-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1d3557;
+            text-align: center;
+        }
+        .question-text {
+            font-size: 1.17em;
+            color: #28516a;
+            margin-bottom: 9px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .card-answer {
+            display: none;
+            background: #f1faee;
+            color: #2a9d8f;
+            font-size: 1.18em;
+            padding: 22px;
+            margin: 18px 0 10px 0;
+            border-radius: 13px;
+            border: 1px solid #a8dadc;
+            white-space: pre-line;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: left;
+            line-height: 1.65;
+        }
+        .controls {
+            margin-top: auto;
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            background-color: #457b9d;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 30px;
+            font-size: 1.12em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.25s, box-shadow 0.25s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.11);
+        }
+        button:hover,
+        button:focus {
+            background-color: #1d3557;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.19);
+            outline: none;
+        }
+        button#showBtn {
+            background-color: #e63946;
+        }
+        button#showBtn:hover {
+            background-color: #d62828;
+        }
+        .step-indicator {
+            color: #6c757d;
+            font-size: 1em;
+            font-weight: 500;
+            position: absolute;
+            top: 16px;
+            right: 22px;
+            background: #e9ecef;
+            border-radius: 16px;
+            padding: 6px 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="flashcard-container">
+        <div class="step-indicator" id="card-number"></div>
+        <img src="" class="slide-image" id="slide-image" alt="Practical Slide Image" />
+        <div class="card-title">Identify</div>
+        <div class="question-text" id="question"></div>
+        <div class="card-answer" id="answer"></div>
+        <div class="controls">
+            <button id="prevBtn">Previous</button>
+            <button id="showBtn">Show Answer</button>
+            <button id="nextBtn">Next</button>
+        </div>
+    </div>
+    <script>
+        // الاجوبة لكل بطاقة
+        const rawAnswers = [
+            "Graduated cylinder",
+            "Beaker",
+            "Conical flask",
+            "Test tubes rack",
+            "Test tubes",
+            "Reagent bottles",
+            "Eppendorf tube",
+            "Centrifuge tube\nseparation of fluid according to its density",
+            "Pauster pipette",
+            "Tips of pipettes\nMeasure small amount of liquid.\nMore accurate because it controls\nthe volume is taken.",
+            "Automatic pipette\nMeasure small amount of liquid.\nMore accurate because it controls\nthe volume is taken.",
+            "Centrifuge\nseparation of fluid according to its density",
+            "Spectrophotometer",
+            "Vortex",
+            "Washing bottles",
+            "Pipette bulb",
+            "Water bath",
+            "Weighing scale",
+            "Weighing scale",
+            "Centrifuge\nseparation of fluid according to its density",
+            "Centrifuge\nseparation of fluid according to its density",
+            "Spectrophotometer (semi automated analyzer)\nMeasurement of different biochemical reactions",
+            "Spectrophotometer (semi automated analyzer)\nMeasurement of different biochemical reactions",
+            "Vortex\nmixer for different fluid and reagent",
+            "Water bath\ncontrol of temperature",
+            "Water bath\ncontrol of temperature",
+            "Digital pipettes\nMeasure small amount of liquid.\nMore accurate because it controls\nthe volume is taken.",
+            "Digital pipettes\nMeasure small amount of liquid.\nMore accurate because it controls\nthe volume is taken."
+        ];
+
+        // انشئ اسئلة بدون "What is the name..." فقط "What is its function?" عند الحاجة
+        const questions = rawAnswers.map(ans => (ans.trim().includes('\n') ? "What is its function?" : ""));
+
+        // إعطاء ترتيب عشوائي عبر كل فتح للصفحة
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+        // بناء الكروت بالبيانات العشوائية
+        let indices = Array.from(rawAnswers.keys());
+        shuffleArray(indices);
+
+        const cards = indices.map(idx => ({
+            img: `Bio ${idx + 1}.png`,
+            answer: rawAnswers[idx],
+            question: questions[idx]
+        }));
+
+        let currentCardIndex = 0;
+        const imageElement = document.getElementById('slide-image');
+        const answerElement = document.getElementById('answer');
+        const cardNumberElement = document.getElementById('card-number');
+        const showButton = document.getElementById('showBtn');
+        const nextButton = document.getElementById('nextBtn');
+        const prevButton = document.getElementById('prevBtn');
+        const questionElement = document.getElementById('question');
+
+        function displayCard() {
+            const card = cards[currentCardIndex];
+            imageElement.src = card.img;
+            answerElement.style.display = 'none';
+            answerElement.textContent = card.answer;
+            cardNumberElement.textContent = `Card ${currentCardIndex + 1} / ${cards.length}`;
+            showButton.disabled = false;
+            questionElement.textContent = '';
+            if(card.question) {
+                questionElement.textContent = card.question;
+            }
+        }
+
+        showButton.onclick = function () {
+            answerElement.style.display = 'block';
+            this.disabled = true;
+        };
+
+        nextButton.onclick = function () {
+            currentCardIndex = (currentCardIndex + 1) % cards.length;
+            displayCard();
+        };
+
+        prevButton.onclick = function () {
+            currentCardIndex = (currentCardIndex - 1 + cards.length) % cards.length;
+            displayCard();
+        };
+
+        displayCard();
+    </script>
+</body>
+</html>
