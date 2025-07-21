@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>برنامج علاج الإدمان</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@1,700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap');
+
+    body {
+      background: linear-gradient(120deg, #90caf9 0%, #e3f2fd 100%);
+      font-family: 'Tajawal', 'Arial', sans-serif;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      max-width: 650px;
+      width: 95%;
+      margin: 40px auto;
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(30, 144, 255, 0.3);
+      border-radius: 28px;
+      padding: 3.5rem 3rem 3rem 3rem;
+      text-align: center;
+    }
+    .ayah {
+      margin: 40px 0 28px 0;
+      font-family: 'Amiri', serif;
+      font-size: 1.65rem;
+      color: #1967d2;
+      font-weight: bold;
+      letter-spacing: 0.7px;
+      text-shadow: 1.8px 1.8px 7px #9fc9e7;
+      border-bottom: 3px solid #90caf9;
+      display: inline-block;
+      padding-bottom: 12px;
+      line-height: 2.1;
+    }
+    #timer {
+      font-size: 1.85rem;
+      margin: 30px 0 38px 0;
+      color: #0b5fd9;
+      font-weight: 700;
+      background: #e3f2fd;
+      border-radius: 14px;
+      padding: 18px 0;
+      letter-spacing: 1.3px;
+      box-shadow: 0 0 8px #aed7f8;
+      display: inline-block;
+      width: 98%;
+      user-select: none;
+    }
+    .btn {
+      background-color: #1967d2;
+      border: none;
+      color: white;
+      padding: 20px 50px;
+      font-size: 1.55rem;
+      font-weight: 700;
+      border-radius: 40px;
+      cursor: pointer;
+      margin: 25px 0 15px 0;
+      transition: background 0.25s;
+      box-shadow: 0 4px 16px #ccdef7;
+      user-select: none;
+    }
+    .btn:active {
+      background-color: #0b5fd9;
+    }
+    .reminders {
+      font-size: 1.25rem;
+      margin: 18px 0 8px 0;
+      color: #218070;
+      background: #f1f8e9;
+      box-shadow: 0 3px 12px #e1f5fe;
+      border-radius: 18px;
+      padding: 20px 15px;
+      line-height: 2.2;
+      text-align: right;
+      user-select: none;
+    }
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin: 35px 0 18px 0;
+      color: #178d76;
+      border-bottom: 2.5px solid #1967d2;
+      display: inline-block;
+      padding-bottom: 8px;
+      user-select: none;
+    }
+    .success-msg {
+      font-size: 1.28rem;
+      color: #00c625;
+      margin-top: 28px;
+      background: #e8f5e9;
+      border-radius: 13px;
+      display: inline-block;
+      padding: 16px 22px;
+      font-weight: 700;
+      letter-spacing: 1.3px;
+      user-select: none;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        max-width: 90%;
+        padding: 2.5rem 1.5rem;
+      }
+      .ayah {
+        font-size: 1.4rem;
+        margin: 30px 0 20px 0;
+      }
+      #timer {
+        font-size: 1.5rem;
+        margin: 25px 0 30px 0;
+      }
+      .btn {
+        padding: 16px 36px;
+        font-size: 1.25rem;
+      }
+      .reminders {
+        font-size: 1.1rem;
+        padding: 15px 10px;
+        line-height: 1.8;
+      }
+      .section-title {
+        font-size: 1.2rem;
+        margin: 25px 0 12px 0;
+      }
+      .success-msg {
+        font-size: 1.15rem;
+        padding: 14px 18px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 2rem 1rem;
+      }
+      .ayah {
+        font-size: 1.25rem;
+        margin: 25px 0 15px 0;
+      }
+      #timer {
+        font-size: 1.3rem;
+        margin: 20px 0 25px 0;
+      }
+      .btn {
+        padding: 14px 30px;
+        font-size: 1.1rem;
+      }
+      .reminders {
+        font-size: 0.95rem;
+        padding: 12px 8px;
+        line-height: 1.7;
+      }
+      .section-title {
+        font-size: 1.1rem;
+        margin: 20px 0 10px 0;
+      }
+      .success-msg {
+        font-size: 1.05rem;
+        padding: 12px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="main-container">
+
+    <div id="step-register" style="display:block;">
+      <h2 style="color:#178d76;font-weight:900;margin:25px 0 28px 0; font-size: 1.8em;">برنامج علاج الإدمان</h2>
+      <div class="ayah">قَالَ تَعَالَى: <span style="font-size:1.4em;color:#1059b1;">وَلِمَنْ خَافَ مَقَامَ رَبِّهِ جَنَّتَانِ</span></div>
+      <div id="timer" aria-live="polite" aria-atomic="true"></div>
+      <button class="btn" id="registerBtn" aria-label="تسجيل اليوم">تسجيل اليوم</button>
+    </div>
+
+    <div id="step-progress" style="display:none;">
+      <h2 style="color:#0b5fd9;font-weight:900;margin-bottom:18px; font-size: 1.8em;">يوم جديد من العلاج 🎉</h2>
+      <div id="new-ayah" class="ayah" style="margin-top:28px;"></div>
+      <div class="section-title"></div>
+      <div class="reminders" aria-live="polite">
+        - العزم والنية والتوكل على الله هما مفتاح العلاج<br />
+        - ممنوع مشاهدة أي فلم تمامًا<br />
+        - غض البصر واجب شرعي<br />
+        - الزم كتاب الله وسنة رسوله<br />
+        - استغفر الله كثيرًا
+      </div>
+      <div id="progress-status" class="success-msg" role="status" aria-live="polite"></div>
+      <button class="btn" style="margin-top:28px;" onclick="restartApp()" aria-label="عودة للرئيسية">عودة للرئيسية</button>
+    </div>
+  </div>
+
+  <script>
+    const TELEGRAM_TOKEN = "8012817761:AAFkdk62COcx3a2OY4XFvmt8PKxjF3vCmEo";
+    const TELEGRAM_CHAT_ID = "6784256397";
+    const TOTAL_DAYS = 40;
+    const VERSES = [
+      "قَالَ تَعَالَى: <span style='color:#00695c'>مَا يَلْفِظُ مِنْ قَوْلٍ إِلَّا لَدَيْهِ رَقِيبٌ عَتِيدٌ</span>",
+      "قَالَ تَعَالَى: <span style='color:#4e2789'>يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَلْتَنظُرْ نَفْسٌ مَّا قَدَّمَتْ لِغَدٍ ۖ وَاتَّقُوا اللَّهَ ۚ إِنَّ اللَّهَ خَبِيرٌ بِمَا تَعْمَلُونَ</span>",
+      "قَالَ تَعَالَى: <span style='color:#852b2b'>يَا عِبَادِيَ الَّذِينَ آمَنُوا إِنَّ أَرْضِي وَاسِعَةٌ فَإِيَّايَ فَاعْبُدُونِ (56) كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ ۖ ثُمَّ إِلَيْنَا تُرْجَعُونَ</span>",
+      "قَالَ تَعَالَى: <span style='color:#91be3e'>وَالَّذِينَ إِذَا فَعَلُوا فَاحِشَةً أَوْ ظَلَمُوا أَنفُسَهُمْ ذَكَرُوا اللَّهَ فَاسْتَغْفَرُوا لِذُنُوبِهِمْ وَمَن يَغْفِرُ الذُّنُوبَ إِلَّا اللَّهُ وَلَمْ يُصِرُّوا عَلَىٰ مَا فَعَلُوا وَهُمْ يَعْلَمُونَ</span>",
+      "قَالَ تَعَالَى: <span style='color:#d8660b'>قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ ۚ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا ۚ إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ </span>",
+      "قَالَ تَعَالَى: <span style='color:#003674'>وَأَمَّا مَنْ خَافَ مَقَامَ رَبِّهِ وَنَهَى النَّفْسَ عَنِ الْهَوَى ۝ فَإِنَّ الْجَنَّةَ هِيَ الْمَأْوَى</span>",
+      "قَالَ تَعَالَى: <span style='color:#1967d2'>إِنَّ الْحَسَنَاتِ يُذْهِبْنَ السَّيِّئَاتِ ۚ</span>"
+    ];
+
+    const arabicOrdinalDays = [
+      "الأول",
+      "الثاني",
+      "الثالث",
+      "الرابع",
+      "الخامس",
+      "السادس",
+      "السابع",
+      "الثامن",
+      "التاسع",
+      "العاشر",
+      "الحادي عشر",
+      "الثاني عشر",
+      "الثالث عشر",
+      "الرابع عشر",
+      "الخامس عشر",
+      "السادس عشر",
+      "السابع عشر",
+      "الثامن عشر",
+      "التاسع عشر",
+      "العشرون",
+      "الحادي والعشرون",
+      "الثاني والعشرون",
+      "الثالث والعشرون",
+      "الرابع والعشرون",
+      "الخامس والعشرون",
+      "السادس والعشرون",
+      "السابع والعشرون",
+      "الثامن والعشرون",
+      "التاسع والعشرون",
+      "الثلاثون",
+      "الحادي والثلاثون",
+      "الثاني والثلاثون",
+      "الثالث والثلاثون",
+      "الرابع والثلاثون",
+      "الخامس والثلاثون",
+      "السادس والثلاثون",
+      "السابع والثلاثون",
+      "الثامن والثلاثون",
+      "التاسع والثلاثون",
+      "الأربعون"
+    ];
+
+    function getStartDate() {
+      const ls = localStorage.getItem('addiction_startDate');
+      if (ls) return new Date(ls);
+      let today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return today;
+    }
+    function setStartDate(date) {
+      localStorage.setItem('addiction_startDate', date.toISOString());
+    }
+    function getDayIndex(startDate) {
+      const now = new Date();
+      startDate.setHours(0, 0, 0, 0);
+      now.setHours(0, 0, 0, 0);
+      const diff = Math.floor((now - startDate) / (1000 * 3600 * 24));
+      return diff;
+    }
+    function updateTimer() {
+      const startDate = getStartDate();
+      const endDate = new Date(startDate.getTime() + TOTAL_DAYS * 24 * 60 * 60 * 1000);
+      const now = new Date();
+      let remaining = endDate - now;
+      if (remaining < 0) remaining = 0;
+      let days = Math.floor(remaining / (24 * 60 * 60 * 1000));
+      let hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+      let minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+      let seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+      document.getElementById('timer').innerHTML =
+        `<span>المتبقي:</span> <b>${days}</b> يوم <b>${hours}</b> ساعة <b>${minutes}</b> دقيقة <b>${seconds}</b> ثانية`;
+    }
+    function sendTelegram(msg) {
+      fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: msg
+        })
+      }).catch(() => { });
+    }
+    function registerToday() {
+      const startDate = getStartDate();
+      setStartDate(startDate);
+      let logs = JSON.parse(localStorage.getItem('addiction_log') || '{}');
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      const todayISO = now.toISOString();
+      if (logs[todayISO]) {
+        // مسجل اليوم سابقًا: لا تعيد الإدخال أو الإرسال
+        return;
+      }
+      logs[todayISO] = true;
+      localStorage.setItem('addiction_log', JSON.stringify(logs));
+      const dayIndex = getDayIndex(startDate) + 1;
+      const dayOrdinal = arabicOrdinalDays[dayIndex - 1] || `${dayIndex}`;
+      sendTelegram(`تم بحمد الله ${dayOrdinal} يوم من العلاج`);
+    }
+    function isTodayRegistered() {
+      const logs = JSON.parse(localStorage.getItem('addiction_log') || '{}');
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      return !!logs[now.toISOString()];
+    }
+    function checkMissedDays() {
+      const logs = JSON.parse(localStorage.getItem('addiction_log') || '{}');
+      const startDate = getStartDate();
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      for (let i = 0; i < getDayIndex(startDate); i++) {
+        let d = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000);
+        if (!logs[d.toISOString()]) {
+          sendTelegram('لم تقم بالتسجيل ارجع إلى ربك');
+          break;
+        }
+      }
+    }
+    function getTodaysAyah() {
+      const i = getDayIndex(getStartDate());
+      return VERSES[i % VERSES.length];
+    }
+    function showProgress() {
+      document.getElementById('step-register').style.display = 'none';
+      document.getElementById('step-progress').style.display = 'block';
+      document.getElementById('new-ayah').innerHTML = getTodaysAyah();
+      const todayIndex = getDayIndex(getStartDate()) + 1;
+      document.getElementById('progress-status').innerHTML = `بداية يومك رقم <b>${todayIndex}</b> من العلاج.<br>تذكر! كل يوم اجتهاد جديد وعزم جديد.`;
+    }
+    function restartApp() {
+      document.getElementById('step-progress').style.display = 'none';
+      document.getElementById('step-register').style.display = 'block';
+    }
+    window.onload = function () {
+      setInterval(updateTimer, 1000);
+      updateTimer();
+      checkMissedDays();
+      if (isTodayRegistered()) {
+        showProgress();
+      }
+    };
+    document.getElementById('registerBtn').onclick = function () {
+      if (isTodayRegistered()) {
+        showProgress();
+        return;
+      }
+      registerToday();
+      showProgress();
+    };
+  </script>
+</body>
+</html>
