@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>نتيجة طلاب كلية طب بشري</title>
+    <style>
+        body {
+            font-family: 'Cairo', Tahoma, Arial, sans-serif;
+            background: #f7f8fb;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+        }
+        .container {
+            max-width: 530px;
+            margin: 60px auto 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 16px #dbe1f2;
+            padding: 36px 32px;
+        }
+        h2 {
+            color: #2874a6;
+            margin-top: 0;
+            text-align: center;
+            line-height: 1.4;
+        }
+        label, input {
+            font-size: 1.09em;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 8px 11px;
+            margin: 15px 0 12px 0;
+            border: 1.5px solid #aacbe6;
+            border-radius: 5px;
+        }
+        .note {
+            color: #888;
+            margin-bottom: 12px;
+            font-size: 0.99em;
+        }
+        button {
+            background: #2874a6;
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.06em;
+            transition: background 0.18s;
+        }
+        button:hover {
+            background: #165c85;
+        }
+        .result-box {
+            margin-top: 24px;
+            background: #ecf3fa;
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: 0 0 4px #dbe1f2;
+            font-size: 1.1em;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        th, td {
+            border: 1px solid #aacbe6;
+            padding: 7px 3px;
+            text-align: center;
+        }
+        th {
+            background: #2874a6;
+            color: #fff;
+        }
+        .fail {
+            color: #c0392b !important;
+            font-weight: bold;
+        }
+        .success {
+            color: #229954 !important;
+            font-weight: bold;
+        }
+        .close-btn {
+            float: left;
+            background: #dce5f1;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 12px;
+            cursor: pointer;
+            font-size: 15px;
+            margin-bottom: 4px;
+            margin-top:-16px;
+        }
+        .close-btn:hover { background: #bcd2ef; }
+        .suggestions {
+            background: #fff3cd;
+            border-radius: 7px;
+            padding: 9px 12px;
+            font-size: 0.97em;
+            margin-top:10px;
+        }
+        .suggestions ul {
+            margin: 4px 0 0 0;
+            padding-right:16px;
+        }
+        .suggestions li {
+            line-height: 1.8;
+            font-size: 1.07em;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>استعلام نتيجة كلية طب بشري<br>جامعة الأزهر - بنين القاهرة</h2>
+    <div class="note">
+        يمكنك البحث ب<strong>رقم الجلوس</strong> أو <strong>اسم الطالب</strong> أو جزء منهم. <br>مثلاً: "22387" أو "أحمد".
+        <br>النتيجة تظهر تلقائياً عند الضغط على "بحث" أو بالضغط على "Enter".
+    </div>
+    <form id="searchForm" autocomplete="off" onsubmit="return false;">
+        <label for="seatNumber">رقم الجلوس أو الاسم:</label>
+        <input type="text" id="seatNumber" name="seatNumber" required>
+        <button type="button" onclick="searchResult()">بحث</button>
+        <button type="button" onclick="clearResult()" style="margin-right:7px;background:#dce5f1;color:#333;">مسح</button>
+    </form>
+    <div id="result" class="result-box" style="display:none;"></div>
+</div>
+<script>
+    // بيانات الطلاب
+       const students = [
+  // المجموعة 1
+  {
+    seat: "05-22387",
+    name: "على محمد على كمال",
+    akhlaq: 23,
+    dam: 74.5,
+    azam: 99,
+    behs: 42,
+    tanfosi: 57.5,
+    aqida: 0,
+    quran: 25,
+    resala: "Fنشط"
+  },
+  {
+    seat: "05-23555",
+    name: "يوسف منير احمد محمد محمود",
+    akhlaq: 21,
+    dam: 84,
+    azam: 168,
+    behs: 42,
+    tanfosi: 79.5,
+    aqida: 0,
+    quran: 21,
+    resala: "Bنشط"
+  },
+  {
+    seat: "05-23766",
+    name: "جالي محمد جالي الدين حسام",
+    akhlaq: 23,
+    dam: 84.5,
+    azam: 174.5,
+    behs: 44,
+    tanfosi: 82.5,
+    aqida: 0,
+    quran: 24,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-23785",
+    name: "محمد مصطفي الحليم عبد مصطفي",
+    akhlaq: 15.5,
+    dam: 5,
+    azam: 11,
+    behs: 40,
+    tanfosi: 5.5,
+    aqida: 0,
+    quran: 19,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24001",
+    name: "الشنيطى المعاطى ابو محمد احمد ابراهيم",
+    akhlaq: 22.5,
+    dam: 63,
+    azam: 148,
+    behs: 38,
+    tanfosi: 75,
+    aqida: 0,
+    quran: 22,
+    resala: "C+نشط"
+  },
+  {
+    seat: "05-24002",
+    name: "هنداوى احمد محمد الطيب محمد احمد ابراهيم",
+    akhlaq: 25,
+    dam: 84.5,
+    azam: 176.5,
+    behs: 45,
+    tanfosi: 88,
+    aqida: 0,
+    quran: 24,
+    resala: "A-نشط"
+  },
+
+  // المجموعة 2
+  {
+    seat: "05-24003",
+    name: "حجازى على حسن ابراهيم اسماعيل ابراهيم",
+    akhlaq: 24,
+    dam: 80,
+    azam: 159,
+    behs: 45,
+    tanfosi: 79,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24004",
+    name: "غريب ابراهيم غريب السيد ابراهيم",
+    akhlaq: 18.5,
+    dam: 3,
+    azam: 7,
+    behs: 30,
+    tanfosi: 12.5,
+    aqida: 0,
+    quran: 18,
+    resala: "A-نشط"
+  },
+  {
+    seat: "05-24005",
+    name: "غنيم ابراهيم محمد جمعه ابراهيم",
+    akhlaq: 24,
+    dam: 82.5,
+    azam: 173.5,
+    behs: 44,
+    tanfosi: 75,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24006",
+    name: "قطقاط محمد حمدى حاتم ابراهيم",
+    akhlaq: 19,
+    dam: 53,
+    azam: 111.5,
+    behs: 37,
+    tanfosi: 63,
+    aqida: 0,
+    quran: 22,
+    resala: "A-نشط"
+  },
+  {
+    seat: "05-24007",
+    name: "قطب حنفى رمضان رضا ابراهيم",
+    akhlaq: 21,
+    dam: 78.5,
+    azam: 163.5,
+    behs: 41,
+    tanfosi: 79,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+
+  // المجموعة 3
+  {
+    seat: "05-24008",
+    name: "سليمان محمد ابراهيم سيف ابراهيم",
+    akhlaq: 22.5,
+    dam: 75.5,
+    azam: 137,
+    behs: 44,
+    tanfosi: 75.5,
+    aqida: 0,
+    quran: 25,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24009",
+    name: "الصعيدى ابراهيم محمد محمد شعبان ابراهيم",
+    akhlaq: 19,
+    dam: 64.5,
+    azam: 147,
+    behs: 36,
+    tanfosi: 61.5,
+    aqida: 0,
+    quran: 22,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24010",
+    name: "العطفى محمود محمد الحكيم عبد ابراهيم",
+    akhlaq: 18.5,
+    dam: 61.5,
+    azam: 149,
+    behs: 39,
+    tanfosi: 81.5,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24011",
+    name: "الدين سعد الحميد عبد ابراهيم الحميد عبد ابراهيم",
+    akhlaq: 19.5,
+    dam: 67.5,
+    azam: 135,
+    behs: 35,
+    tanfosi: 73,
+    aqida: 0,
+    quran: 22,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24012",
+    name: "هيف ابو العال عبد الرحيم عبد عالء ابراهيم",
+    akhlaq: 20.5,
+    dam: 68.5,
+    azam: 128.5,
+    behs: 37,
+    tanfosi: 74,
+    aqida: 0,
+    quran: 23,
+    resala: "C+نشط"
+  },
+
+  // المجموعة 4
+  {
+    seat: "05-24013",
+    name: "المعبود عبد غريب محيى عماد ابراهيم",
+    akhlaq: 19.5,
+    dam: 71.5,
+    azam: 156.5,
+    behs: 38,
+    tanfosi: 77.5,
+    aqida: 0,
+    quran: 23,
+    resala: "A-نشط"
+  },
+  {
+    seat: "05-24014",
+    name: "مراد يوسف ابراهيم كامل ابراهيم",
+    akhlaq: 24,
+    dam: 73,
+    azam: 150.5,
+    behs: 40,
+    tanfosi: 80.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A-نشط"
+  },
+  {
+    seat: "05-24015",
+    name: "حماده عوض جمعه كريم ابراهيم",
+    akhlaq: 15,
+    dam: 70,
+    azam: 145.5,
+    behs: 45,
+    tanfosi: 67,
+    aqida: 0,
+    quran: 22,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24016",
+    name: "على السيد الرحمن عبد لطفى ابراهيم",
+    akhlaq: 24.5,
+    dam: 89.5,
+    azam: 187,
+    behs: 44,
+    tanfosi: 87,
+    aqida: 0,
+    quran: 23,
+    resala: "A+نشط"
+  },
+  }
+    seat: "05-24017",
+    name: "المعاطى ابو على ابراهيم محمد ابراهيم",
+    akhlaq: 24,
+    dam: 68,
+    azam: 161.5,
+    behs: 43,
+    tanfosi: 81.5,
+    aqida: 0,
+    quran: 24,
+    resala: "Cنشط"
+  },
+  {
+    seat: "05-24018",
+    name: "البالط حسن محمد حسن محمد ابراهيم",
+    akhlaq: 20,
+    dam: 68,
+    azam: 113,
+    behs: 36,
+    tanfosi: 65.5,
+    aqida: 0,
+    quran: 22,
+    resala: "Fنشط"
+  },
+  {
+    seat: "05-24019",
+    name: "حجره محمود ربيع محمد ابراهيم",
+    akhlaq: 23,
+    dam: 85,
+    azam: 181,
+    behs: 42,
+    tanfosi: 87.5,
+    aqida: 0,
+    quran: 22,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24020",
+    name: "محمد احمد حسن محمد محمود",
+    akhlaq: 22,
+    dam: 70,
+    azam: 165,
+    behs: 43,
+    tanfosi: 80,
+    aqida: 0,
+    quran: 23,
+    resala: "Bنشط"
+  },
+  {
+    seat: "05-24021",
+    name: "احمد عبد الله حسن عبد الرحمن",
+    akhlaq: 24,
+    dam: 83,
+    azam: 170,
+    behs: 44,
+    tanfosi: 85,
+    aqida: 0,
+    quran: 24,
+    resala: "A-نشط"
+  },
+  {
+    seat: "05-24022",
+    name: "مصطفى احمد محمد عبد العزيز",
+    akhlaq: 21,
+    dam: 77,
+    azam: 160,
+    behs: 40,
+    tanfosi: 75,
+    aqida: 0,
+    quran: 22,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24023",
+    name: "عبد الرحمن جمال عبد الله احمد",
+    akhlaq: 23,
+    dam: 75,
+    azam: 155,
+    behs: 41,
+    tanfosi: 79,
+    aqida: 0,
+    quran: 23,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24024",
+    name: "حسن محمد كريم عبد الرحمن",
+    akhlaq: 20,
+    dam: 68,
+    azam: 140,
+    behs: 40,
+    tanfosi: 72,
+    aqida: 0,
+    quran: 24,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24025",
+    name: "رامي محمود احمد عصام",
+    akhlaq: 22,
+    dam: 70,
+    azam: 150,
+    behs: 43,
+    tanfosi: 74,
+    aqida: 0,
+    quran: 22,
+    resala: "Aنشط"
+  },
+  }
+    seat: "05-24026",
+    name: "محمد أحمد علي إبراهيم",
+    akhlaq: 23,
+    dam: 81,
+    azam: 170,
+    behs: 43,
+    tanfosi: 85,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24027",
+    name: "علي محمود حسن عبد الله",
+    akhlaq: 22.5,
+    dam: 78.5,
+    azam: 165,
+    behs: 42,
+    tanfosi: 80,
+    aqida: 0,
+    quran: 24,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24028",
+    name: "أحمد عبد الرحمن محمد سيد",
+    akhlaq: 21.5,
+    dam: 70,
+    azam: 160,
+    behs: 40,
+    tanfosi: 77,
+    aqida: 0,
+    quran: 23,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24029",
+    name: "محمود سامي أحمد فؤاد",
+    akhlaq: 24,
+    dam: 85,
+    azam: 180,
+    behs: 44,
+    tanfosi: 88,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24030",
+    name: "مصطفى عبدالله محمد كريم",
+    akhlaq: 19,
+    dam: 65,
+    azam: 140,
+    behs: 38,
+    tanfosi: 74,
+    aqida: 0,
+    quran: 22,
+    resala: "Bنشط"
+  },
+  {
+    seat: "05-24031",
+    name: "سعيد خالد حسن إبراهيم",
+    akhlaq: 20.5,
+    dam: 72,
+    azam: 155,
+    behs: 41,
+    tanfosi: 79,
+    aqida: 0,
+    quran: 24,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24032",
+    name: "طارق عبد الله محمد علي",
+    akhlaq: 22,
+    dam: 80,
+    azam: 165,
+    behs: 43,
+    tanfosi: 84,
+    aqida: 0,
+    quran: 25,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24033",
+    name: "أحمد إبراهيم سعد محمد",
+    akhlaq: 23,
+    dam: 83,
+    azam: 172,
+    behs: 44,
+    tanfosi: 86,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24034",
+    name: "محمد سامي أحمد حسن",
+    akhlaq: 18,
+    dam: 63,
+    azam: 142,
+    behs: 39,
+    tanfosi: 75,
+    aqida: 0,
+    quran: 22,
+    resala: "Bنشط"
+  },
+  {
+    seat: "05-24035",
+    name: "فهد عبد العزيز سعيد محمد",
+    akhlaq: 19.5,
+    dam: 70,
+    azam: 150,
+    behs: 41,
+    tanfosi: 78,
+    aqida: 0,
+    quran: 24,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24036",
+    name: "محمد ياسر عمر عبد الله",
+    akhlaq: 24.5,
+    dam: 88,
+    azam: 185,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24037",
+    name: "إبراهيم محمود حسن مصطفى",
+    akhlaq: 20,
+    dam: 66,
+    azam: 143,
+    behs: 40,
+    tanfosi: 76,
+    aqida: 0,
+    quran: 23,
+    resala: "Bنشط"
+  },
+  {
+    seat: "05-24038",
+    name: "علي خالد عبد الرحمن صالح",
+    akhlaq: 22,
+    dam: 73,
+    azam: 158,
+    behs: 42,
+    tanfosi: 81,
+    aqida: 0,
+    quran: 24,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24039",
+    name: "ياسر محمد أحمد صالح",
+    akhlaq: 21,
+    dam: 70,
+    azam: 155,
+    behs: 41,
+    tanfosi: 79,
+    aqida: 0,
+    quran: 24,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24040",
+    name: "خالد عبد الله محمود علي",
+    akhlaq: 24,
+    dam: 84,
+    azam: 178,
+    behs: 44,
+    tanfosi: 88,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24041",
+    name: "مروان أحمد محمد عبد الرحيم",
+    akhlaq: 23,
+    dam: 77,
+    azam: 172,
+    behs: 42,
+    tanfosi: 85,
+    aqida: 0,
+    quran: 24,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24042",
+    name: "عمر يوسف محمد حسن",
+    akhlaq: 20,
+    dam: 69,
+    azam: 148,
+    behs: 40,
+    tanfosi: 80,
+    aqida: 0,
+    quran: 23,
+    resala: "B+نشط"
+  },
+  }
+    seat: "05-24043",
+    name: "أحمد محمد علي عبد الله",
+    akhlaq: 22,
+    dam: 78,
+    azam: 165,
+    behs: 43,
+    tanfosi: 80,
+    aqida: 0,
+    quran: 24,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24044",
+    name: "محمد سعيد حسن أحمد",
+    akhlaq: 23.5,
+    dam: 82,
+    azam: 170,
+    behs: 44,
+    tanfosi: 85,
+    aqida: 0,
+    quran: 25,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24045",
+    name: "علي خالد محمود سعيد",
+    akhlaq: 21,
+    dam: 75,
+    azam: 160,
+    behs: 40,
+    tanfosi: 78,
+    aqida: 0,
+    quran: 23,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24046",
+    name: "مصطفى أحمد عبد الرحمن علي",
+    akhlaq: 24,
+    dam: 84,
+    azam: 175,
+    behs: 43,
+    tanfosi: 87,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24047",
+    name: "سامح إبراهيم محمد حسن",
+    akhlaq: 20.5,
+    dam: 70,
+    azam: 150,
+    behs: 42,
+    tanfosi: 76,
+    aqida: 0,
+    quran: 23,
+    resala: "Bنشط"
+  },
+  {
+    seat: "05-24048",
+    name: "سامي عبد الله أحمد علي",
+    akhlaq: 22,
+    dam: 78,
+    azam: 167,
+    behs: 43,
+    tanfosi: 81,
+    aqida: 0,
+    quran: 24,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24049",
+    name: "حسن محمد سعيد عبد الرحمن",
+    akhlaq: 24,
+    dam: 85,
+    azam: 180,
+    behs: 45,
+    tanfosi: 88,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24050",
+    name: "رامي يوسف محمود حسن",
+    akhlaq: 21,
+    dam: 72,
+    azam: 155,
+    behs: 42,
+    tanfosi: 79,
+    aqida: 0,
+    quran: 23,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24051",
+    name: "محمود كمال عبد الله علي",
+    akhlaq: 19,
+    dam: 65,
+    azam: 140,
+    behs: 39,
+    tanfosi: 73,
+    aqida: 0,
+    quran: 22,
+    resala: "Bنشط"
+  },
+  {
+    seat: "05-24052",
+    name: "عادل محمد إبراهيم سعد",
+    akhlaq: 20,
+    dam: 70,
+    azam: 148,
+    behs: 41,
+    tanfosi: 77,
+    aqida: 0,
+    quran: 23,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24053",
+    name: "نور الدين محمود عبد الرحمن",
+    akhlaq: 22,
+    dam: 79,
+    azam: 168,
+    behs: 44,
+    tanfosi: 82,
+    aqida: 0,
+    quran: 25,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24054",
+    name: "عمر أحمد سعيد عبد الله",
+    akhlaq: 23.5,
+    dam: 83,
+    azam: 175,
+    behs: 44,
+    tanfosi: 86,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24055",
+    name: "إسلام خالد محمد ياسر",
+    akhlaq: 21,
+    dam: 73,
+    azam: 160,
+    behs: 41,
+    tanfosi: 79,
+    aqida: 0,
+    quran: 24,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24056",
+    name: "ياسر علي عبد الرحمن أحمد",
+    akhlaq: 24,
+    dam: 85,
+    azam: 180,
+    behs: 44,
+    tanfosi: 87,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24057",
+    name: "كريم صلاح محمد عبد الله",
+    akhlaq: 19,
+    dam: 68,
+    azam: 145,
+    behs: 40,
+    tanfosi: 75,
+    aqida: 0,
+    quran: 22,
+    resala: "Bنشط"
+  },
+  {
+    seat: "05-24058",
+    name: "محمد سامي أحمد عبد الرحمن",
+    akhlaq: 20.5,
+    dam: 72,
+    azam: 158,
+    behs: 42,
+    tanfosi: 80,
+    aqida: 0,
+    quran: 24,
+    resala: "B+نشط"
+  },
+  {
+    seat: "05-24059",
+    name: "طه محمود عبد العزيز حسن",
+    akhlaq: 23,
+    dam: 84,
+    azam: 172,
+    behs: 44,
+    tanfosi: 86,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24060",
+    name: "مجدي أحمد محمد ياسر",
+    akhlaq: 21,
+    dam: 70,
+    azam: 160,
+    behs: 40,
+    tanfosi: 78,
+    aqida: 0,
+    quran: 23,
+    resala: "B+نشط"
+  },
+  }
+    seat: "05-24061",
+    name: "محمد حسين عبدالجواد حسين",
+    akhlaq: 23,
+    dam: 78,
+    azam: 162,
+    behs: 43,
+    tanfosi: 80,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24062",
+    name: "احمد ابراهيم احمد ابراهيم",
+    akhlaq: 23.5,
+    dam: 86.5,
+    azam: 178.5,
+    behs: 45,
+    tanfosi: 89,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24063",
+    name: "احمد ابراهيم احمد السيد احمد",
+    akhlaq: 24.5,
+    dam: 85,
+    azam: 177.5,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24064",
+    name: "احمد ابراهيم احمد خليل",
+    akhlaq: 24,
+    dam: 86.5,
+    azam: 176.5,
+    behs: 44,
+    tanfosi: 88,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24065",
+    name: "احمد ابراهيم احمد عبدالتواب",
+    akhlaq: 21,
+    dam: 75,
+    azam: 153.5,
+    behs: 41,
+    tanfosi: 81,
+    aqida: 0,
+    quran: 22,
+    resala: "A-نشط"
+  },
+  {
+    seat: "05-24066",
+    name: "احمد ابراهيم السيد محمد",
+    akhlaq: 23,
+    dam: 83,
+    azam: 171.5,
+    behs: 45,
+    tanfosi: 87,
+    aqida: 0,
+    quran: 22,
+    resala: "A-نشط"
+  },
+  {
+    seat: "05-24067",
+    name: "احمد ابراهيم جاد الكريم احمد",
+    akhlaq: 22,
+    dam: 77,
+    azam: 157,
+    behs: 42,
+    tanfosi: 84,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24068",
+    name: "احمد ابراهيم عبدالحميد ابراهيم",
+    akhlaq: 22,
+    dam: 73,
+    azam: 147,
+    behs: 44,
+    tanfosi: 80,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24069",
+    name: "احمد ابراهيم محمد احمد",
+    akhlaq: 24,
+    dam: 86,
+    azam: 180.5,
+    behs: 44,
+    tanfosi: 88,
+    aqida: 0,
+    quran: 22,
+    resala: "A-نشط"
+  },
+  {
+    seat: "05-24070",
+    name: "احمد ابراهيم محمد طنطاوى",
+    akhlaq: 24,
+    dam: 87.5,
+    azam: 182,
+    behs: 45,
+    tanfosi: 88.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24071",
+    name: "احمد ابراهيم محمد عطيه",
+    akhlaq: 23.5,
+    dam: 81.5,
+    azam: 167,
+    behs: 44,
+    tanfosi: 84.5,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24072",
+    name: "احمد ابو اليزيد على سليمان",
+    akhlaq: 21,
+    dam: 72,
+    azam: 146,
+    behs: 39,
+    tanfosi: 79.5,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24073",
+    name: "احمد اسامه احمد محمد",
+    akhlaq: 23,
+    dam: 78.5,
+    azam: 153.5,
+    behs: 43,
+    tanfosi: 85,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24074",
+    name: "احمد اسامه السيد عبدالغنى",
+    akhlaq: 23,
+    dam: 75.5,
+    azam: 151,
+    behs: 42,
+    tanfosi: 81,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24075",
+    name: "احمد اسامه توفيق احمد",
+    akhlaq: 20,
+    dam: 73,
+    azam: 147,
+    behs: 39,
+    tanfosi: 74,
+    aqida: 0,
+    quran: 22,
+    resala: "A-نشط"
+  },
+  {
+    seat: "05-24076",
+    name: "احمد اسامه محمد جاد",
+    akhlaq: 24.5,
+    dam: 86.5,
+    azam: 180.5,
+    behs: 44,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24077",
+    name: "احمد اشرف حسينى حسانين",
+    akhlaq: 21.5,
+    dam: 75.5,
+    azam: 155,
+    behs: 42,
+    tanfosi: 80.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24078",
+    name: "احمد اشرف شفيق صالح",
+    akhlaq: 23,
+    dam: 76.5,
+    azam: 156,
+    behs: 41,
+    tanfosi: 81,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24079",
+    name: "احمد اشرف عبدالحليم ابراهيم",
+    akhlaq: 21.5,
+    dam: 76,
+    azam: 162,
+    behs: 41,
+    tanfosi: 80.5,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24080",
+    name: "احمد اشرف عبدالفتاح محمد",
+    akhlaq: 20.5,
+    dam: 73,
+    azam: 154,
+    behs: 40,
+    tanfosi: 76.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24081",
+    name: "احمد اشرف على عبده",
+    akhlaq: 22.5,
+    dam: 82.5,
+    azam: 167.5,
+    behs: 44,
+    tanfosi: 86,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24082",
+    name: "احمد اشرف محمد عبدالحميد",
+    akhlaq: 24,
+    dam: 81,
+    azam: 168,
+    behs: 44,
+    tanfosi: 85.5,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24083",
+    name: "احمد اشرف محمد عبدربه",
+    akhlaq: 24.5,
+    dam: 85.5,
+    azam: 177,
+    behs: 45,
+    tanfosi: 89,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24084",
+    name: "احمد اكرامى عبدالمنعم احمد",
+    akhlaq: 24,
+    dam: 85.5,
+    azam: 178.5,
+    behs: 44,
+    tanfosi: 89,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24085",
+    name: "احمد امير سعد سليمان",
+    akhlaq: 23,
+    dam: 82.5,
+    azam: 172.5,
+    behs: 44,
+    tanfosi: 85,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24086",
+    name: "احمد ايمن السيد محمد",
+    akhlaq: 24.5,
+    dam: 88,
+    azam: 184,
+    behs: 44,
+    tanfosi: 88.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24087",
+    name: "احمد ايمن عبدالواحد السيد",
+    akhlaq: 22,
+    dam: 75,
+    azam: 156,
+    behs: 41,
+    tanfosi: 79.5,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24088",
+    name: "احمد ايمن فتحى محمد",
+    akhlaq: 24,
+    dam: 83.5,
+    azam: 174,
+    behs: 43,
+    tanfosi: 87,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24089",
+    name: "احمد ايمن محمد احمد",
+    akhlaq: 24,
+    dam: 83,
+    azam: 170,
+    behs: 42,
+    tanfosi: 86,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24090",
+    name: "احمد بدوى السيد المرسى",
+    akhlaq: 23,
+    dam: 82,
+    azam: 170,
+    behs: 43,
+    tanfosi: 85.5,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24091",
+    name: "احمد بكر عبدالحليم مصطفى",
+    akhlaq: 22.5,
+    dam: 80,
+    azam: 161,
+    behs: 42,
+    tanfosi: 83,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24092",
+    name: "احمد جابر السيد محمد",
+    akhlaq: 20,
+    dam: 68,
+    azam: 145,
+    behs: 40,
+    tanfosi: 75,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24093",
+    name: "احمد جابر بدوى سالم",
+    akhlaq: 23.5,
+    dam: 85,
+    azam: 177,
+    behs: 43,
+    tanfosi: 87.5,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24094",
+    name: "احمد جاد المولى محمود محمد",
+    akhlaq: 24.5,
+    dam: 87,
+    azam: 181,
+    behs: 45,
+    tanfosi: 89.5,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24095",
+    name: "احمد جمال ابراهيم محمد",
+    akhlaq: 24.5,
+    dam: 86,
+    azam: 180,
+    behs: 44,
+    tanfosi: 89,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24096",
+    name: "احمد جمال حسن السيد",
+    akhlaq: 22,
+    dam: 79.5,
+    azam: 164.5,
+    behs: 42,
+    tanfosi: 82.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24097",
+    name: "احمد جمال حسن محمد",
+    akhlaq: 24,
+    dam: 83.5,
+    azam: 170.5,
+    behs: 43,
+    tanfosi: 86.5,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24098",
+    name: "احمد جمال عبدالتواب عبدالفتاح",
+    akhlaq: 24.5,
+    dam: 86.5,
+    azam: 181.5,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24099",
+    name: "احمد جمال عيد على",
+    akhlaq: 24.5,
+    dam: 89,
+    azam: 185,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24100",
+    name: "احمد جمال فتحى السيد",
+    akhlaq: 22,
+    dam: 76.5,
+    azam: 157,
+    behs: 41,
+    tanfosi: 81.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24101",
+    name: "احمد جمال محمد عثمان",
+    akhlaq: 21,
+    dam: 70,
+    azam: 140,
+    behs: 40,
+    tanfosi: 76,
+    aqida: 0,
+    quran: 23,
+    resala: "Aنشط"
+  },
+  {
+    seat: "05-24102",
+    name: "احمد جمعه رمضان احمد",
+    akhlaq: 23.5,
+    dam: 85.5,
+    azam: 178.5,
+    behs: 44,
+    tanfosi: 88.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24103",
+    name: "احمد جهاد صلاح الدين محمد",
+    akhlaq: 23.5,
+    dam: 84.5,
+    azam: 175,
+    behs: 44,
+    tanfosi: 87.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24104",
+    name: "احمد حاتم ابراهيم حسن",
+    akhlaq: 23.5,
+    dam: 84,
+    azam: 172,
+    behs: 43,
+    tanfosi: 86.5,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24105",
+    name: "احمد حاتم ابراهيم محمد",
+    akhlaq: 24.5,
+    dam: 87.5,
+    azam: 183,
+    behs: 44,
+    tanfosi: 89,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24106",
+    name: "احمد حاتم فتحى عبدالمنعم",
+    akhlaq: 24,
+    dam: 87,
+    azam: 181.5,
+    behs: 44,
+    tanfosi: 88.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24107",
+    name: "احمد حامد احمد محمد",
+    akhlaq: 24,
+    dam: 84,
+    azam: 174.5,
+    behs: 44,
+    tanfosi: 86.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24108",
+    name: "احمد حامد محمد حامد",
+    akhlaq: 22,
+    dam: 80,
+    azam: 165.5,
+    behs: 42,
+    tanfosi: 83,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24109",
+    name: "احمد حسام الدين يوسف احمد",
+    akhlaq: 21,
+    dam: 74,
+    azam: 153.5,
+    behs: 42,
+    tanfosi: 80,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24110",
+    name: "احمد حسام محمود محمد",
+    akhlaq: 23.5,
+    dam: 80.5,
+    azam: 165,
+    behs: 43,
+    tanfosi: 84,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24111",
+    name: "احمد حسن اسماعيل محمد",
+    akhlaq: 23.5,
+    dam: 84,
+    azam: 176,
+    behs: 43,
+    tanfosi: 87,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24112",
+    name: "احمد حسن رجب عبدالغفار",
+    akhlaq: 24.5,
+    dam: 87,
+    azam: 181,
+    behs: 45,
+    tanfosi: 89.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24113",
+    name: "احمد حسن محمد احمد",
+    akhlaq: 21.5,
+    dam: 78.5,
+    azam: 162,
+    behs: 41,
+    tanfosi: 81,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24114",
+    name: "احمد حسن محمد حسن",
+    akhlaq: 23,
+    dam: 80.5,
+    azam: 167,
+    behs: 42,
+    tanfosi: 84.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24115",
+    name: "احمد حسن محمد عبدالحميد",
+    akhlaq: 24.5,
+    dam: 86.5,
+    azam: 180.5,
+    behs: 45,
+    tanfosi: 89,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24116",
+    name: "احمد حسن محمد عبدالله",
+    akhlaq: 22,
+    dam: 77.5,
+    azam: 159,
+    behs: 42,
+    tanfosi: 81.5,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24117",
+    name: "احمد حسن محمد على",
+    akhlaq: 24.5,
+    dam: 87.5,
+    azam: 181,
+    behs: 45,
+    tanfosi: 89.5,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24118",
+    name: "احمد حسين احمد حسن",
+    akhlaq: 23.5,
+    dam: 83.5,
+    azam: 173,
+    behs: 44,
+    tanfosi: 87,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24119",
+    name: "احمد حسين احمد محمد",
+    akhlaq: 23,
+    dam: 81,
+    azam: 168,
+    behs: 43,
+    tanfosi: 85,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24120",
+    name: "احمد حسين توفيق كامل",
+    akhlaq: 21,
+    dam: 75,
+    azam: 154.5,
+    behs: 40,
+    tanfosi: 79,
+    aqida: 0,
+    quran: 24,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24121",
+    name: "احمد حسين خليفه حسين",
+    akhlaq: 24,
+    dam: 85,
+    azam: 176.5,
+    behs: 44,
+    tanfosi: 88,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24122",
+    name: "احمد حسين عبدالفتاح عبدالفتاح",
+    akhlaq: 24.5,
+    dam: 87,
+    azam: 181.5,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24123",
+    name: "احمد حسين محمد عيد",
+    akhlaq: 24.5,
+    dam: 86.5,
+    azam: 180,
+    behs: 45,
+    tanfosi: 89,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24124",
+    name: "احمد حسين محمد محمد",
+    akhlaq: 23.5,
+    dam: 84.5,
+    azam: 175.5,
+    behs: 44,
+    tanfosi: 87.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24125",
+    name: "احمد حمدى احمد محمد",
+    akhlaq: 24,
+    dam: 86,
+    azam: 178.5,
+    behs: 44,
+    tanfosi: 88.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24126",
+    name: "احمد حمدى السيد احمد",
+    akhlaq: 24.5,
+    dam: 87.5,
+    azam: 182.5,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24127",
+    name: "احمد حمدى عبدالحكيم محمد",
+    akhlaq: 24,
+    dam: 86.5,
+    azam: 180,
+    behs: 45,
+    tanfosi: 89,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24128",
+    name: "احمد حمدى عبدالسلام محمد",
+    akhlaq: 23.5,
+    dam: 84.5,
+    azam: 176,
+    behs: 44,
+    tanfosi: 87.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24129",
+    name: "احمد حمدى محمد محمد",
+    akhlaq: 24.5,
+    dam: 87,
+    azam: 181,
+    behs: 45,
+    tanfosi: 89.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24130",
+    name: "احمد حمزه حسين محمد",
+    akhlaq: 24.5,
+    dam: 88,
+    azam: 184,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24131",
+    name: "احمد خالد احمد محمد",
+    akhlaq: 23,
+    dam: 81.5,
+    azam: 169,
+    behs: 43,
+    tanfosi: 85.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24132",
+    name: "احمد خالد السيد محمد",
+    akhlaq: 24.5,
+    dam: 88.5,
+    azam: 185,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24133",
+    name: "احمد خالد بركات حسين",
+    akhlaq: 23.5,
+    dam: 84,
+    azam: 174,
+    behs: 44,
+    tanfosi: 87,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24134",
+    name: "احمد خالد توفيق عبدالله",
+    akhlaq: 23.5,
+    dam: 85,
+    azam: 177,
+    behs: 44,
+    tanfosi: 88,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24135",
+    name: "احمد خالد سليمان محمد",
+    akhlaq: 23,
+    dam: 82.5,
+    azam: 171,
+    behs: 43,
+    tanfosi: 86,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24136",
+    name: "احمد خالد عبدالحكيم احمد",
+    akhlaq: 24,
+    dam: 86.5,
+    azam: 180.5,
+    behs: 45,
+    tanfosi: 89.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24137",
+    name: "احمد خالد عبدالحميد السيد",
+    akhlaq: 24.5,
+    dam: 87.5,
+    azam: 183,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24138",
+    name: "احمد خالد عبدالعظيم محمد",
+    akhlaq: 24.5,
+    dam: 88,
+    azam: 184.5,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24139",
+    name: "احمد خالد عبدالفتاح على",
+    akhlaq: 24.5,
+    dam: 87,
+    azam: 181.5,
+    behs: 45,
+    tanfosi: 89.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24140",
+    name: "احمد خالد عبداللطيف احمد",
+    akhlaq: 24,
+    dam: 86,
+    azam: 179,
+    behs: 45,
+    tanfosi: 89,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24141",
+    name: "احمد خالد على محمد",
+    akhlaq: 23.5,
+    dam: 84,
+    azam: 174.5,
+    behs: 44,
+    tanfosi: 87,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24142",
+    name: "احمد خالد محمد حسن",
+    akhlaq: 24.5,
+    dam: 88,
+    azam: 184,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24143",
+    name: "احمد خالد محمد عبداللطيف",
+    akhlaq: 24.5,
+    dam: 87.5,
+    azam: 182,
+    behs: 45,
+    tanfosi: 89.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24144",
+    name: "احمد خالد محمد محمود",
+    akhlaq: 24.5,
+    dam: 87,
+    azam: 181,
+    behs: 45,
+    tanfosi: 89.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24145",
+    name: "احمد خيرى عبدالحميد عبداللطيف",
+    akhlaq: 23.5,
+    dam: 85.5,
+    azam: 178,
+    behs: 44,
+    tanfosi: 88.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24146",
+    name: "احمد ربيع خميس محمد",
+    akhlaq: 24.5,
+    dam: 87.5,
+    azam: 182.5,
+    behs: 45,
+    tanfosi: 90,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24147",
+    name: "احمد رجب عبدالنبى جمعه",
+    akhlaq: 24.5,
+    dam: 87,
+    azam: 181,
+    behs: 45,
+    tanfosi: 89.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24148",
+    name: "احمد رضا حسين محمد",
+    akhlaq: 24,
+    dam: 86,
+    azam: 179.5,
+    behs: 45,
+    tanfosi: 89,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24149",
+    name: "احمد رضا على احمد",
+    akhlaq: 24.5,
+    dam: 87,
+    azam: 181.5,
+    behs: 45,
+    tanfosi: 89.5,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  },
+  {
+    seat: "05-24150",
+    name: "احمد رمضان عبدالقادر محمد",
+    akhlaq: 24,
+    dam: 86.5,
+    azam: 180,
+    behs: 45,
+    tanfosi: 89,
+    aqida: 0,
+    quran: 25,
+    resala: "A+نشط"
+  }
+];
+    // المواد
+    const subjects = [
+        {key: "akhlaq", title: "الأخلاقيات الطبية", max: 25},
+        {key: "dam",    title: "مكونات الدم وعلم المناعة الأساسية", max: 100},
+        {key: "azam",   title: "العضلات والعظام والجلد", max: 200},
+        {key: "behs",   title: "البحث العلمي", max: 50},
+        {key: "tanfosi",title: "الجهاز التنفسي", max: 100},
+        {key: "aqida",  title: "العقيدة", max: 25},
+        {key: "quran",  title: "القرآن الكريم", max: 25}
+    ];
+
+    // تحويل أرقام عربي لإنجليزي
+    function toEnglishNums(input) {
+      return input.replace(/[\u0660-\u0669]/g, d => d.charCodeAt(0)-0x0660)
+                  .replace(/[\u06f0-\u06f9]/g, d => d.charCodeAt(0)-0x06f0);
+    }
+    // إزالة الشرطات ومساحات
+    function normalize(str) {
+      return toEnglishNums(str||'').replace(/-/g, '').replace(/\s+/g, '').toLowerCase();
+    }
+
+    // مسح النتائج والتهيئة
+    function clearResult() {
+        document.getElementById('result').style.display = "none";
+        document.getElementById('seatNumber').value = "";
+        document.getElementById('seatNumber').focus();
+    }
+
+    // عرض النتيجة
+    function displayResult(student) {
+        // حساب المجموع والنسبة
+        let totalMax = subjects.filter(s=>s.key!=="aqida").reduce((sum, s) => sum + s.max, 0);
+        let total = 0, hasFail = false;
+        let table = `<table>
+            <tr><th>المادة</th><th>الدرجة</th><th>النهاية العظمى</th><th>الحالة</th></tr>`;
+        subjects.forEach(subj => {
+            const value = student[subj.key];
+            let state = "", failHere = false;
+            if(subj.key !== "aqida") {
+                if(value===0){
+                    state="<span class='fail'>F (راسب)</span>";
+                    hasFail=true; failHere=true;
+                }
+                else if(typeof value === "number") {
+                    state="<span class='success'>ناجح</span>";
+                    total+=value;
+                }
+            } else { state="-"; }
+            table += `<tr>
+                <td>${subj.title}</td>
+                <td>${value}${failHere?" (F)":""}</td>
+                <td>${subj.max}</td>
+                <td>${state}</td>
+            </tr>`;
+        }); table+="</table>";
+        let percent = ((total/totalMax)*100).toFixed(2);
+
+        let msg = hasFail
+          ? "<span class='fail'>يوجد مواد راسب بها (F). يجب الإعادة في هذه المواد.</span>"
+          : "<span class='success'>ناجح في جميع المواد.</span>";
+        return `
+        <button class='close-btn' onclick="clearResult()">مسـح ×</button>
+        <b>اسم الطالب:</b> ${student.name}<br>
+        <b>رقم الجلوس:</b> ${student.seat}<br>
+        <b>التقدير العام:</b> ${student.resala || '---'}<hr>
+        ${table}
+        <b>المجموع:</b> ${total} من ${totalMax} <br>
+        <b>النسبة المئوية:</b> ${percent}% <hr>
+        ${msg}
+        `;
+    }
+
+    // البحث عن الطلاب
+    function searchResult() {
+        const seatInput = document.getElementById('seatNumber');
+        let value = (seatInput.value||"").trim();
+        let q = normalize(value);
+        const resultBox = document.getElementById('result');
+        resultBox.style.display = "none"; resultBox.innerHTML = "";
+
+        if(!q){ seatInput.focus(); return; }
+
+        // بحث دقيق رقم الجلوس
+        let student = students.find(stu => normalize(stu.seat) === q);
+
+        // بحث تلقائي بالاسم أو الرقم (حتى جزئي)
+        if(!student) {
+            let matches = students.filter(stu=>
+                normalize(stu.seat).includes(q) ||
+                normalize(stu.name).includes(q)
+            );
+            if(matches.length===1) student = matches[0];
+            else if(matches.length>1) {
+                let list = matches.map(stu=>`<li>${stu.name} (${stu.seat})</li>`).join('');
+                resultBox.innerHTML = `
+                  <div class='suggestions'>
+                    يوجد أكثر من نتيجة، برجاء تحديد البحث بشكل أدق.
+                    <ul>${list}</ul>
+                  </div>`;
+                resultBox.style.display="block";
+                seatInput.focus();
+                return;
+            }
+            // إذا لم يوجد أي طلاب، اقترح أقرب نتائج
+            else if(matches.length===0) {
+                // اقتراح بناءً على أقرب تشابه في رقم الجلوس أو الاسم (أول 3 فقط)
+                let similars = students.filter(stu =>
+                  normalize(stu.seat).slice(-q.length) === q ||
+                  normalize(stu.name).includes(q.slice(0,2))
+                ).slice(0,4);
+                let tip = similars.length
+                  ? "<b>هل تقصد أحد هؤلاء؟</b><ul>" +
+                     similars.map(stu=>`<li>${stu.name} (${stu.seat})</li>`).join('')+"</ul>"
+                  : "لم يتم العثور على رقم الجلوس أو الاسم المطلوب.";
+                resultBox.innerHTML = `<div class='fail'>لا يوجد طالب بهذه البيانات المدخلة.<br>${tip}</div>`;
+                resultBox.style.display="block";
+                seatInput.focus();
+                return;
+            }
+        }
+
+        // عرض نتيجة الطالب
+        resultBox.innerHTML = displayResult(student);
+        resultBox.style.display = "block";
+        seatInput.focus();
+    }
+
+    // دعم الضغط Enter داخل حقل البحث
+    document.getElementById("seatNumber").addEventListener("keydown", function(e){
+      if(e.key==="Enter") { e.preventDefault(); searchResult(); }
+    });
+
+    // تفعيل تركيز الحقل دائما
+    setTimeout(()=>{ document.getElementById('seatNumber').focus(); }, 200);
+</script>
+</body>
+</html>
